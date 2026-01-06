@@ -21,6 +21,7 @@ class Users(SQLModel, table=True):
         )
     )
     posts: list["Posts"] = Relationship(back_populates="owner")
+    likes: list["Likes"] = Relationship(back_populates="user")
 
 class Posts(SQLModel, table=True):
     id: Optional[int] = Field(nullable=False, primary_key=True)
@@ -36,6 +37,14 @@ class Posts(SQLModel, table=True):
         )
     )
     owner: Users = Relationship(back_populates="posts")
+    likes: list["Likes"] = Relationship(back_populates="post")
+
+
+class Likes(SQLModel, table=True):
+    user_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False,primary_key=True))
+    post_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False,primary_key=True))
+    user: Users = Relationship(back_populates="likes")
+    post: Posts = Relationship(back_populates="likes")
 
 db_password = quote_plus(settings.my_db_password)    
 SQLMODEL_DATABASE_URL = f"postgresql://{settings.my_db_user}:{db_password}@{settings.my_db_host}:{settings.my_db_port}/{settings.my_db_name}"
