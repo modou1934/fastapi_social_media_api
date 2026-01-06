@@ -73,7 +73,7 @@ def update_post(post_id: int, post: Posts, session: Session = Depends(get_sessio
 '''## RAW SQL
 while True:
     try:
-        conn = psycopg.connect(conninfo="host=localhost dbname=fastapi_social_media_api user=postgres password=Smab11Cisse@")
+        conn = psycopg.connect(conninfo="host= dbname= user= password=")
         cursor = conn.cursor()
         print("Database connection successful")
         break
