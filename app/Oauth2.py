@@ -5,19 +5,17 @@ from datetime import datetime, timedelta
 from app.schemas import TokenData
 from app.database import get_session,Users
 from sqlmodel import select,Session
-from os import getenv
-from dotenv import load_dotenv
+from app.config import settings
 
 
-load_dotenv()
 
 
 
 ouath2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-SECRET_KEY = getenv("SECRET_KEY")
-ALGORITHM = getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = int(settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
 def create_access_token(data: dict):
     to_encode = data.copy()

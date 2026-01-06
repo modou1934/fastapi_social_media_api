@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from .database import create_db_and_tables
 from .routers import post,user,auth
-
+from .config import settings
 
 
 app = FastAPI()

@@ -5,10 +5,8 @@ from typing import Generator
 from datetime import datetime
 from sqlalchemy import text,Column,DateTime,Integer,ForeignKey
 from urllib.parse import quote_plus
-from dotenv import load_dotenv
-from os import getenv
+from app.config import settings
 
-load_dotenv()
 
 class Users(SQLModel, table=True):
     id: Optional[int] = Field(nullable=False,primary_key=True)
@@ -39,8 +37,8 @@ class Posts(SQLModel, table=True):
     )
     owner: Users = Relationship(back_populates="posts")
 
-db_password = quote_plus(getenv("DB_PASSWORD"))    
-SQLMODEL_DATABASE_URL = f"postgresql://postgres:{db_password}@{getenv("DB_HOST")}:{getenv("DB_PORT")}/{getenv("DB_NAME")}"
+db_password = quote_plus(settings.my_db_password)    
+SQLMODEL_DATABASE_URL = f"postgresql://{settings.my_db_user}:{db_password}@{settings.my_db_host}:{settings.my_db_port}/{settings.my_db_name}"
 engine = create_engine(SQLMODEL_DATABASE_URL, echo=True)
 
 def create_db_and_tables():
