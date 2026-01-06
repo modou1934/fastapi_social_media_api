@@ -1,6 +1,6 @@
 from fastapi import status,HTTPException,Depends,Response,APIRouter
 from typing import Optional
-from app.database import get_session,Posts
+from app.database import get_session,Posts,Users
 from sqlmodel import select,Session
 from app.schemas import Post,PostResponse
 import time
@@ -15,12 +15,12 @@ router = APIRouter(
 )
 ## SQLMODEL
 @router.get("/", response_model=list[PostResponse],status_code=status.HTTP_200_OK)  
-def read_posts(session: Session = Depends(get_session)):
-    posts = session.exec(select(Posts)).all()
+def read_posts(session: Session = Depends(get_session),limit: int = 10, skip: int = 0,search: Optional[str] = None):
+    posts = session.exec(select(Posts).limit(limit).offset(skip).where(Posts.title.contains(search))).all()
     return posts  
 
 @router.post("/", response_model=PostResponse,status_code=status.HTTP_201_CREATED)
-def create_post(post: Posts, session: Session = Depends(get_session),current_user: int = Depends(get_current_user)):
+def create_post(post: Posts, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
     post.owner_id = current_user.id
     session.add(post)
     session.commit()
@@ -36,25 +36,28 @@ def read_post(post_id: int, session: Session = Depends(get_session)):
     return post
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(post_id: int, session: Session = Depends(get_session),current_user: int = Depends(get_current_user)):
+def delete_post(post_id: int, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
     post = session.get(Posts, post_id)
-    post_owner_id = post.owner_id
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    if post_owner_id != current_user.id:
+    
+    if post.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
+    
     session.delete(post)
     session.commit()
     return None
 
 @router.put("/{post_id}", response_model=PostResponse,status_code=status.HTTP_200_OK)
-def update_post(post_id: int, post: Posts, session: Session = Depends(get_session),current_user: int = Depends(get_current_user)):
+def update_post(post_id: int, post: Posts, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
     db_post = session.get(Posts, post_id)
-    post_owner_id = db_post.owner_id
-    if not post:
+    
+    if not db_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    if post_owner_id != current_user.id:
+    
+    if db_post.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to perform requested action")
+    
     db_post.title = post.title
     db_post.content = post.content
     db_post.published = post.published

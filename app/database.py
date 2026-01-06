@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, create_engine, select,Relationship
 from typing import Generator
 from datetime import datetime
 from sqlalchemy import text,Column,DateTime,Integer,ForeignKey
@@ -18,6 +18,7 @@ class Users(SQLModel, table=True):
             nullable=False
         )
     )
+    posts: list["Posts"] = Relationship(back_populates="owner")
 
 class Posts(SQLModel, table=True):
     id: Optional[int] = Field(nullable=False, primary_key=True)
@@ -32,8 +33,9 @@ class Posts(SQLModel, table=True):
             nullable=False
         )
     )
+    owner: Users = Relationship(back_populates="posts")
 
-db_password = quote_plus("Smab11Cisse@")
+db_password = quote_plus("Smab11Cisse@")    
 SQLMODEL_DATABASE_URL = f"postgresql://postgres:{db_password}@localhost:5432/fastapi_social_media_api"
 engine = create_engine(SQLMODEL_DATABASE_URL, echo=True)
 

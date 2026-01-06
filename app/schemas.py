@@ -7,10 +7,7 @@ class Post(BaseModel):
     content: str
     published: bool = True
 
-class PostResponse(Post):
-    id: int
-    owner_id: int
-    created_at: datetime
+
 
 class User(BaseModel):
     username: Optional[str] = None
@@ -24,6 +21,12 @@ class UserCreate(BaseModel):
 class UserResponse(User):
     id: int
     created_at: datetime
+
+class PostResponse(Post):
+    id: int
+    owner_id: int
+    created_at: datetime
+    owner: UserResponse
 
 class UserLogin(BaseModel):
     email: EmailStr
