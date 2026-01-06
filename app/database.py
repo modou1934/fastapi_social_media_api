@@ -19,6 +19,18 @@ class Posts(SQLModel, table=True):
         )
     )
 
+class Users(SQLModel, table=True):
+    id: Optional[int] = Field(nullable=False,primary_key=True)
+    username: str = Field(nullable=False, index=True)
+    email: str = Field(nullable=False, unique=True, index=True) 
+    password: str = Field(nullable=False)
+    created_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("NOW()"), 
+            nullable=False
+        )
+    )
 
 db_password = quote_plus("Smab11Cisse@")
 SQLMODEL_DATABASE_URL = f"postgresql://postgres:{db_password}@localhost:5432/fastapi_social_media_api"
