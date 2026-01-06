@@ -9,6 +9,7 @@ class Post(BaseModel):
 
 class PostResponse(Post):
     id: int
+    owner_id: int
     created_at: datetime
 
 class User(BaseModel):

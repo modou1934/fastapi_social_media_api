@@ -1,23 +1,10 @@
 from typing import Optional
 from fastapi import Depends, FastAPI, HTTPException, status
-from sqlmodel import Field, Session, SQLModel, create_engine, select,TIMESTAMP
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 from typing import Generator
 from datetime import datetime
-from sqlalchemy import text,Column,DateTime
+from sqlalchemy import text,Column,DateTime,Integer,ForeignKey
 from urllib.parse import quote_plus
-
-class Posts(SQLModel, table=True):
-    id: Optional[int] = Field(nullable=False, primary_key=True)
-    title: str = Field(nullable=False)
-    content: str = Field(nullable=False)
-    published: bool = Field(default=True,sa_column_kwargs={"server_default": "true"} )
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("NOW()"),
-            nullable=False
-        )
-    )
 
 class Users(SQLModel, table=True):
     id: Optional[int] = Field(nullable=False,primary_key=True)
@@ -28,6 +15,20 @@ class Users(SQLModel, table=True):
         sa_column=Column(
             DateTime(timezone=True),
             server_default=text("NOW()"), 
+            nullable=False
+        )
+    )
+
+class Posts(SQLModel, table=True):
+    id: Optional[int] = Field(nullable=False, primary_key=True)
+    title: str = Field(nullable=False)
+    content: str = Field(nullable=False)
+    published: bool = Field(default=True,sa_column_kwargs={"server_default": "true"} )
+    owner_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False))
+    created_at: datetime = Field(
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("NOW()"),
             nullable=False
         )
     )
