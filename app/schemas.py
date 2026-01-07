@@ -29,6 +29,10 @@ class PostResponse(Post):
     created_at: datetime
     owner: UserResponse
     
+class PostWithLikes(BaseModel):
+    Post:PostResponse
+    Likes: int
+    
 
 class UserLogin(BaseModel):
     email: EmailStr

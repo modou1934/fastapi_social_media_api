@@ -17,7 +17,7 @@ def create_like(like: Like, session: Session = Depends(get_session),current_user
     if not session.get(Posts,like.post_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     post = session.exec(select(Likes).where(Likes.post_id == like.post_id, Likes.user_id == current_user.id)).first()
-    if like.dir== 1:
+    if like.dir == 1:
         if post:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Post already liked")
         session.add(Likes(post_id = like.post_id, user_id= current_user.id))

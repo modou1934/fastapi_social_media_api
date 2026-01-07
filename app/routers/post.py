@@ -1,8 +1,8 @@
 from fastapi import status,HTTPException,Depends,Response,APIRouter
 from typing import Optional
-from app.database import get_session,Posts,Users
-from sqlmodel import select,Session
-from app.schemas import Post,PostResponse
+from app.database import get_session,Posts,Users,Likes
+from sqlmodel import select,Session,func
+from app.schemas import Post,PostResponse,PostWithLikes
 import time
 import psycopg
 from app.Oauth2 import get_current_user
@@ -14,10 +14,11 @@ router = APIRouter(
     tags=["posts"]
 )
 ## SQLMODEL
-@router.get("/", response_model=list[PostResponse],status_code=status.HTTP_200_OK)  
-def read_posts(session: Session = Depends(get_session),limit: int = 10, skip: int = 0,search: Optional[str] = None):
-    posts = session.exec(select(Posts).limit(limit).offset(skip).where(Posts.title.contains(search))).all()
-    return posts  
+@router.get("/",status_code=status.HTTP_200_OK,response_model=list[PostWithLikes] )# 
+def read_posts(session: Session = Depends(get_session),limit: int = 5, skip: int = 0,search: Optional[str] = ""):
+    results = session.exec(select(Posts,func.count(Likes.post_id).label("likes")).join(Likes,Likes.post_id == Posts.id,isouter=True).group_by(Posts.id).limit(limit).offset(skip).where(Posts.title.contains(search))).all()
+    results = [{"Post":p,"Likes":l} for p,l in results]
+    return results
 
 @router.post("/", response_model=PostResponse,status_code=status.HTTP_201_CREATED)
 def create_post(post: Posts, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
@@ -28,12 +29,15 @@ def create_post(post: Posts, session: Session = Depends(get_session),current_use
     return post
 
 
-@router.get("/{post_id}", response_model=PostResponse,status_code=status.HTTP_200_OK)
+@router.get("/{post_id}", response_model=list[PostWithLikes],status_code=status.HTTP_200_OK)
 def read_post(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Posts, post_id)
+
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-    return post
+    result = session.exec(select(Posts,func.count(Likes.post_id).label("likes")).join(Likes,Likes.post_id == Posts.id,isouter=True).where(Posts.id==post_id).group_by(Posts.id)).all()
+    result = [{"Post":p,"Likes":l} for p,l in result]
+    return result
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(post_id: int, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
