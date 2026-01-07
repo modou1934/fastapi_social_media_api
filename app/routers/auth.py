@@ -1,5 +1,6 @@
 from fastapi import APIRouter,Depends,HTTPException,status,Response
-from app.database import get_session,Users
+from app.database import get_session
+from app.models import Users
 from sqlmodel import select,Session
 from email_validator import validate_email, EmailNotValidError
 from app.utils import hash_password

@@ -4,50 +4,13 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select,Relationshi
 from typing import Generator
 from datetime import datetime
 from sqlalchemy import text,Column,DateTime,Integer,ForeignKey
-from urllib.parse import quote_plus
 from app.config import settings
 
 
-class Users(SQLModel, table=True):
-    id: Optional[int] = Field(nullable=False,primary_key=True)
-    username: str = Field(nullable=False, index=True)
-    email: str = Field(nullable=False, unique=True, index=True) 
-    password: str = Field(nullable=False)
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("NOW()"), 
-            nullable=False
-        )
-    )
-    posts: list["Posts"] = Relationship(back_populates="owner")
-    likes: list["Likes"] = Relationship(back_populates="user")
-
-class Posts(SQLModel, table=True):
-    id: Optional[int] = Field(nullable=False, primary_key=True)
-    title: str = Field(nullable=False)
-    content: str = Field(nullable=False)
-    published: bool = Field(default=True,sa_column_kwargs={"server_default": "true"} )
-    owner_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False))
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("NOW()"),
-            nullable=False
-        )
-    )
-    owner: Users = Relationship(back_populates="posts")
-    likes: list["Likes"] = Relationship(back_populates="post")
 
 
-class Likes(SQLModel, table=True):
-    user_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False,primary_key=True))
-    post_id: Optional[int] = Field(sa_column=Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False,primary_key=True))
-    user: Users = Relationship(back_populates="likes")
-    post: Posts = Relationship(back_populates="likes")
 
-db_password = quote_plus(settings.my_db_password)    
-SQLMODEL_DATABASE_URL = f"postgresql://{settings.my_db_user}:{db_password}@{settings.my_db_host}:{settings.my_db_port}/{settings.my_db_name}"
+SQLMODEL_DATABASE_URL = f"postgresql://{settings.my_db_user}:{settings.my_db_password}@{settings.my_db_host}:{settings.my_db_port}/{settings.my_db_name}"
 engine = create_engine(SQLMODEL_DATABASE_URL, echo=True)
 
 def create_db_and_tables():

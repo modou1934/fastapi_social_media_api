@@ -1,5 +1,6 @@
 from fastapi import status,HTTPException,Depends,Response,APIRouter
-from app.database import get_session,Users,Likes,Posts
+from app.database import get_session
+from app.models import Posts,Users,Likes
 from sqlmodel import select,Session
 from app.schemas import UserResponse,UserCreate,Like
 from email_validator import validate_email, EmailNotValidError

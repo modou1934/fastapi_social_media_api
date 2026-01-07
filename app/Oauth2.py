@@ -3,12 +3,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from datetime import datetime, timedelta
 from app.schemas import TokenData
-from app.database import get_session,Users
+from app.database import get_session
+from app.models import Users
 from sqlmodel import select,Session
 from app.config import settings
-
-
-
 
 
 ouath2_scheme = OAuth2PasswordBearer(tokenUrl="login")
