@@ -15,11 +15,9 @@ services:
           property: connectionString
     
     autoDeploy: true
-    envBranchName: main
 
 databases:
   - name: postgres
-    databaseName: social_api_db  # Nome interno del DB
-    user: postgres               # Username
-    plan: free                   # Free tier
-
+    databaseName: social_api_db
+    user: postgres
+    plan: free
