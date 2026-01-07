@@ -1,31 +1,25 @@
-# render.yaml - Nel root del progetto
 services:
-  # Web Service (la tua FastAPI app)
   - type: web
-    name: fastapi_social_media_api            # Nome del servizio
-    env: python                        # Ambiente Python
-    plan: free                         # Piano gratuito
-    buildCommand: "pip install -r requirements.txt"    # Build
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT" # Avvia la tua app
+    name: fastapi_social_media_api
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     
-    # Environment Variables
     envVars:
       - key: ENVIRONMENT
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: postgres       # Nome del database (crealo prima)
-          property: connectionString   # Internal URL automatica
+          name: postgres
+          property: connectionString
     
-    # Auto-deploy su push GitHub
     autoDeploy: true
-    envBranchName: main                 # Branch da deployare
+    envBranchName: main
 
-  # Database PostgreSQL
-  - type: pgsql
-    name: postgres             # Nome del database
-    disk:
-      name: db-data
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1                       # 1GB gratuito
-    plan: free                         # Piano gratuito (90 giorni)
+databases:
+  - name: postgres
+    databaseName: social_api_db  # Nome interno del DB
+    user: postgres               # Username
+    plan: free                   # Free tier
+
