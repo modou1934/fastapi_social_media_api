@@ -11,7 +11,7 @@ from app.Oauth2 import get_current_user
 
 
 router = APIRouter(
-    prefix="/sqlmodel/posts",
+    prefix="/posts",
     tags=["posts"]
 )
 ## SQLMODEL

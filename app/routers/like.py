@@ -9,7 +9,7 @@ from app.Oauth2 import get_current_user
 
 
 router = APIRouter(
-    prefix="/sqlmodel/likes",
+    prefix="/likes",
     tags=["likes"]
 )
 

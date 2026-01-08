@@ -25,7 +25,7 @@ app.include_router(auth.router)
 app.include_router(like.router)
 @app.get("/")
 def root():
-    return {"message": "Welcome to NotiClient!!!!!"}
+    return {"message": "Welcome to NotiClient: the best AI app for financial advisors!!!!!"}
 
 
 
