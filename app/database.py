@@ -10,7 +10,7 @@ from app.config import settings
 
 
 
-SQLMODEL_DATABASE_URL = f"{settings.my_db_url}"
+SQLMODEL_DATABASE_URL = f"{settings.DATABASE_URL}"
 engine = create_engine(SQLMODEL_DATABASE_URL, echo=True)
 
 def create_db_and_tables():
