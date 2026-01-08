@@ -10,7 +10,7 @@ from alembic import context
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url",f"postgresql://{settings.my_db_user}:{settings.my_db_password}@{settings.my_db_host}:{settings.my_db_port}/{settings.my_db_name}")
+config.set_main_option("sqlalchemy.url",f"{settings.my_db_url}")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
