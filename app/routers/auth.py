@@ -18,7 +18,7 @@ router = APIRouter(
 def login(user: UserLogin, session: Session = Depends(get_session)):
     User = session.exec(select(Users).where(Users.email == user.email)).first()
     if not User:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials")
     if not verify_password(user.password, User.password):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid credentials")
     
