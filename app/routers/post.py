@@ -16,8 +16,8 @@ router = APIRouter(
 )
 ## SQLMODEL
 @router.get("/",status_code=status.HTTP_200_OK,response_model=list[PostWithLikes] )# 
-def read_posts(session: Session = Depends(get_session),limit: int = 5, skip: int = 0,search: Optional[str] = ""):
-    results = session.exec(select(Posts,func.count(Likes.post_id).label("likes")).join(Likes,Likes.post_id == Posts.id,isouter=True).group_by(Posts.id).limit(limit).offset(skip).where(Posts.title.contains(search))).all()
+def read_posts(session: Session = Depends(get_session),limit: int = 10, skip: int = 0,search: Optional[str] = ""):
+    results = session.exec(select(Posts,func.count(Likes.post_id).label("likes")).join(Likes,Likes.post_id == Posts.id,isouter=True).group_by(Posts.id).limit(limit).order_by(Posts.id).offset(skip).where(Posts.title.contains(search))).all()
     results = [{"Post":p,"Likes":l} for p,l in results]
     return results
 

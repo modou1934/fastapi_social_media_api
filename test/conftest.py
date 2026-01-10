@@ -1,12 +1,13 @@
 from fastapi.testclient import TestClient
 from app.main import app
-
+from app.Oauth2 import create_access_token
 from app.config import settings
-from sqlmodel import  Session, SQLModel, create_engine
+from sqlmodel import  Session, SQLModel, create_engine,select
 from typing import Generator
 from app.database import get_session
 import pytest
 from alembic import command
+from app import models
 
 
 
@@ -44,3 +45,32 @@ def test_user(client):
     new_user = res.json()
     new_user["password"] = user_data["password"]
     return new_user
+
+
+@pytest.fixture(scope="module")
+def token(test_user):
+    return create_access_token({"user_id":test_user["id"]})
+
+
+@pytest.fixture(scope="module")
+def authorized_client(client,token):
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {token}"
+    }
+    return client
+
+@pytest.fixture(scope="module")
+def test_posts(test_user, session):
+    posts_data = [{"title":"1st title","content":"1st content","owner_id":test_user["id"]},
+    {"title":"2nd title","content":"2nd content","owner_id":test_user["id"]},
+    {"title":"3rd title","content":"3rd content","owner_id":test_user["id"]},
+    {"title":"4th title","content":"4th content","owner_id":test_user["id"]},
+    {"title":"5th title","content":"5th content","owner_id":test_user["id"]},
+    {"title":"6th title","content":"6th content","owner_id":test_user["id"]},
+    {"title":"7th title","content":"7th content","owner_id":test_user["id"]}]
+
+    session.add_all(list(map(lambda post: models.Posts(**post),posts_data)))
+    session.commit()
+    posts= session.exec(select(models.Posts)).all()
+    return posts
