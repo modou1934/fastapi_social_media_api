@@ -1,0 +1,12 @@
+name: Build and Deply Code
+
+on: [push, pull_request]
+
+jobs:
+  jon1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v6
+      - name: say hy
+        run: echo "hello modou"
