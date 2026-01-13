@@ -6,12 +6,15 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: "postgresql://postgres:Smab11Cisse@localhost:5432/fastapi_social_media_api"
-      ACCESS_TOKEN_EXPIRE_MINUTES: "60"
-      ALGORITHM: "HS256"    
-      SECRET_KEY: "09d25e094faa6ca2556c818166b7a9563b93sasdgfvv436099f6f0f4c2432aa6cf63b88e8d3e7"
-      POSTGRES_PASSWORD: "Smab11Cisse"
-      POSTGRES_DB: "fastapi_social_media_api"
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}    
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
     steps:
       - name: pulling git repo
         uses: actions/checkout@v4
