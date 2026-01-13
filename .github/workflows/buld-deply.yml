@@ -4,6 +4,13 @@ on: [push, pull_request]
 
 jobs:
   job1:
+    env:
+      DATABASE_URL: ${{env.DATABASE_UR}}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{env.ACCESS_TOKEN_EXPIRE_MINUTES}}
+      ALGORITHM: ${{env.ALGORITHM}}    
+      SECRET_KEY: ${{env.SECRET_KEY}}
+      POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+      POSTGRES_DB: ${{env.POSTGRES_DB}}
     runs-on: ubuntu-latest
     steps:
       - name: pulling git repo
