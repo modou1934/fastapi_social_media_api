@@ -62,7 +62,13 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi_social_media_api:latest
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Move cache  # NEW: Rotate for next run
+        if: always()
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx -cache-new /tmp/.buildx-cache
       - name: image digest
         run: echo ${{ steps.buildx.outputs.digest }}
         
