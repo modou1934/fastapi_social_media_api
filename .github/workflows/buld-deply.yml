@@ -10,3 +10,11 @@ jobs:
         uses: actions/checkout@v6
       - name: say hy
         run: echo "hello modou"
+      - name: install python version 3.14.0
+        uses: actions/setup-python@v6 
+        with:
+          python-version: "3.14"
+      - name: update pip
+        run: python -m pip install --upgrade pip
+      - name: install dependencies
+        run: pip install -r requirements.txt
