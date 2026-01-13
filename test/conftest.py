@@ -46,6 +46,14 @@ def test_user(client):
     new_user["password"] = user_data["password"]
     return new_user
 
+@pytest.fixture(scope="module")
+def test_user2(client):   
+    user_data= {"username":"useradmin","email":"smab@gmail.com","password":"password123"}
+    res= client.post("/users/",json=user_data)
+    assert res.status_code == 201
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
+    return new_user
 
 @pytest.fixture(scope="module")
 def token(test_user):
@@ -53,22 +61,22 @@ def token(test_user):
 
 
 @pytest.fixture(scope="module")
-def authorized_client(client,token):
-    client.headers = {
-        **client.headers,
-        "Authorization": f"Bearer {token}"
-    }
+def authorized_client(token):
+    client = TestClient(app)
+    client.headers.update({"Authorization": f"Bearer {token}"})
     return client
 
 @pytest.fixture(scope="module")
-def test_posts(test_user, session):
+def test_posts(test_user, session,test_user2):
     posts_data = [{"title":"1st title","content":"1st content","owner_id":test_user["id"]},
     {"title":"2nd title","content":"2nd content","owner_id":test_user["id"]},
     {"title":"3rd title","content":"3rd content","owner_id":test_user["id"]},
     {"title":"4th title","content":"4th content","owner_id":test_user["id"]},
     {"title":"5th title","content":"5th content","owner_id":test_user["id"]},
     {"title":"6th title","content":"6th content","owner_id":test_user["id"]},
-    {"title":"7th title","content":"7th content","owner_id":test_user["id"]}]
+    {"title":"7th title","content":"7th content","owner_id":test_user2["id"]},
+    {"title":"8th title","content":"8th content","owner_id":test_user2["id"]},
+    {"title":"9th title","content":"9th content","owner_id":test_user2["id"]}]
 
     session.add_all(list(map(lambda post: models.Posts(**post),posts_data)))
     session.commit()

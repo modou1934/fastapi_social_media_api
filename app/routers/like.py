@@ -15,18 +15,21 @@ router = APIRouter(
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 def create_like(like: Like, session: Session = Depends(get_session),current_user: Users = Depends(get_current_user)):
-    if not session.get(Posts,like.post_id):
+    find_post = session.get(Posts,like.post_id)
+    if not find_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     post = session.exec(select(Likes).where(Likes.post_id == like.post_id, Likes.user_id == current_user.id)).first()
     if like.dir == 1:
         if post:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Post already liked")
+        if find_post.owner_id == current_user.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You can't like your own post!")
         session.add(Likes(post_id = like.post_id, user_id= current_user.id))
         session.commit()
         return {"like":"like successfully added!!"}
     else:
         if not post:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Post not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
         session.delete(post)
         session.commit()
         return {"like":"like successfully removed!!"}
