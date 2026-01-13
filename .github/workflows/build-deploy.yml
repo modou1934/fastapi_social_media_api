@@ -68,7 +68,7 @@ jobs:
         if: always()
         run: |
           rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx -cache-new /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: image digest
         run: echo ${{ steps.buildx.outputs.digest }}
         
